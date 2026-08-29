@@ -33,7 +33,11 @@ export interface OreSearchResult {
 
 export interface OreSearchParams {
   worldSeed: bigint;
-  mcVersion: number; // one of CubiomesEngine.versions.* — resolved by caller, never guessed
+  /** Plain version label, e.g. '26.2' — resolved internally against the
+   *  loaded engine's own version accessors (see cubiomesEngine.ts) once
+   *  it's actually available. The UI never needs to know the
+   *  cubiomes-internal ordinal, which only exists after an async load. */
+  mcVersionLabel: '26.1' | '26.2';
   dimension: number;
   oreType: WasmOreType;
   centerX: number;
@@ -77,7 +81,8 @@ function chunkOf(block: number): number {
 }
 
 function runWasmSearch(engine: CubiomesEngine, params: OreSearchParams): OreSearchResult {
-  const { worldSeed, mcVersion, dimension, oreType, centerX, centerZ, radius } = params;
+  const { worldSeed, mcVersionLabel, dimension, oreType, centerX, centerZ, radius } = params;
+  const mcVersion = mcVersionLabel === '26.2' ? engine.versions.MC_26_2 : engine.versions.MC_26_1;
 
   engine.openWorld(mcVersion, dimension, worldSeed);
 

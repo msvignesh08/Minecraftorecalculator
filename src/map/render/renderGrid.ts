@@ -81,14 +81,36 @@ export function renderChunkBorders(
 
   ctx.stroke();
 
-  if (!options.showLabels || state.zoom < 1) return;
+  // Labels need real room to render without bleeding into the next
+  // cell — "-23,-19" is ~6-7 characters. Below zoom 6, a chunk (16
+  // blocks) is under ~96px wide, not enough for that text without
+  // overlapping its neighbor. This threshold (not the old `zoom < 1`)
+  // is what was actually causing the smushed/overlapping label bug.
+  const MIN_ZOOM_FOR_LABELS = 6;
+  if (!options.showLabels || state.zoom < MIN_ZOOM_FOR_LABELS) return;
 
   ctx.fillStyle = LABEL_COLOR;
   ctx.font = '10px monospace';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+
+  const cellSizePx = 16 * state.zoom;
+
   for (let cx = startChunkX; cx <= endChunkX; cx++) {
     for (let cz = startChunkZ; cz <= endChunkZ; cz++) {
-      const { sx, sy } = worldToScreen(state, { x: cx * 16 + 1, z: cz * 16 + 9 });
-      ctx.fillText(`${cx},${cz}`, sx, sy);
+      const { sx, sy } = worldToScreen(state, { x: cx * 16, z: cz * 16 });
+
+      // Clip to this cell's own rectangle so long labels near the
+      // viewport edge (a partially-visible chunk) can NEVER paint over
+      // a neighboring cell, regardless of font metrics or zoom level —
+      // this is what actually guarantees no more bleed, rather than
+      // just tuning the threshold above and hoping it's enough.
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(sx, sy, cellSizePx, cellSizePx);
+      ctx.clip();
+      ctx.fillText(`${cx},${cz}`, sx + 3, sy + 2);
+      ctx.restore();
     }
   }
 }
