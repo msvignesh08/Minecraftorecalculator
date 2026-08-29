@@ -3,6 +3,10 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  // Only matters for GitHub Pages, which serves from /<repo-name>/ instead
+  // of the domain root. Vercel/Netlify ignore this (they serve from root),
+  // so it's safe to leave set either way.
+  base: '/Minecraftorecalculator/',
   plugins: [
     react(),
     VitePWA({
