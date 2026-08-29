@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-ssr/
+*.local
+.DS_Store
+native/cubiomes/
+src/engine/wasm/cubiomes.mjs
+src/engine/wasm/cubiomes.wasm
+*.tsbuildinfo

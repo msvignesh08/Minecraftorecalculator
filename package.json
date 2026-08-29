@@ -1,0 +1,30 @@
+{
+  "name": "minecraft-ore-finder",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test:engine": "tsx src/engine/smokeTest.ts",
+    "test:map-state": "tsx src/map/mapState.smokeTest.ts",
+    "test:gestures": "tsx src/map/interaction/panZoomController.smokeTest.ts",
+    "test": "npm run test:engine && npm run test:map-state && npm run test:gestures"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2",
+    "vite-plugin-pwa": "^0.20.5"
+  }
+}
