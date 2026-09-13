@@ -1,0 +1,12 @@
+import test from'node:test';import assert from'node:assert/strict';import{mkdtempSync,rmSync}from'node:fs';import os from'node:os';import path from'node:path';import{createCrewServer}from'./server.mjs';
+test('Two players join, sync pins, enforce authorization, survive restart and leave',async()=>{const dir=mkdtempSync(path.join(os.tmpdir(),'crew-')),file=path.join(dir,'rooms.json');let server=createCrewServer({file});await new Promise(r=>server.listen(0,'127.0.0.1',r));let base='http://127.0.0.1:'+server.address().port;
+ async function post(route,b={},session){const r=await fetch(base+route,{method:'POST',headers:{'Content-Type':'application/json',...(session?{Authorization:'Bearer '+session}:{})},body:JSON.stringify(b)});return{status:r.status,data:await r.json()}}
+ try{const setup={seed:'-9223372036854775808',edition:'java',version:'262',dimension:0,oreId:'diamond',x:0,z:0,radius:48,minY:-64,maxY:16};const host=await post('/v1/rooms',{name:'Vignesh',setup});assert.equal(host.status,200);const h=host.data,prefix='/v1/rooms/'+h.id;
+ assert.equal((await post(prefix+'/join',{name:'Intruder',invite:'wrong'})).status,403);assert.equal((await post(prefix+'/poll')).status,401);
+ const guest=await post(prefix+'/join',{name:'Friend',invite:h.invite});assert.equal(guest.status,200);assert.equal(guest.data.players.length,2);
+ const pinned=await post(prefix+'/pin',{x:12,y:-59,z:34,label:'Mine here'},h.session);assert.equal(pinned.status,200);const pin=pinned.data.pins[0];const received=await post(prefix+'/poll',{},guest.data.session);assert.deepEqual(received.data.pins[0],pin);assert.equal(received.data.setup.seed,setup.seed);
+ assert.equal((await post(prefix+'/remove-pin',{id:pin.id},guest.data.session)).status,403);assert.equal((await post(prefix+'/pin',{x:1.5,y:0,z:0,label:'bad'},h.session)).status,400);
+ await new Promise(r=>server.close(r));server=createCrewServer({file});await new Promise(r=>server.listen(0,'127.0.0.1',r));base='http://127.0.0.1:'+server.address().port;assert.equal((await post(prefix+'/poll',{},h.session)).data.pins.length,1);
+ assert.equal((await post(prefix+'/remove-pin',{id:pin.id},h.session)).status,200);assert.equal((await post(prefix+'/poll',{},guest.data.session)).data.pins.length,0);
+ await post(prefix+'/leave',{},guest.data.session);assert.equal((await post(prefix+'/poll',{},guest.data.session)).status,401);assert.equal((await post('/v1/rooms',{name:'x',setup:{...setup,seed:'9223372036854775808'}})).status,400);
+ }finally{await new Promise(r=>server.close(r));rmSync(dir,{recursive:true,force:true})}});

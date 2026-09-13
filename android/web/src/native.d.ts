@@ -1,0 +1,1 @@
+interface Window { AtlasNative: { getStore(k:string):string; setStore(k:string,v:string):void; copy(s:string):void; saveCsv(s:string):void; shareText(s:string):void; takeExpedition():string } }

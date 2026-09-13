@@ -1,0 +1,16 @@
+{
+  "java": {
+    "repository": "https://github.com/xpple/cubiomes.git",
+    "commit": "0a3db3a4c9f4b1740bb30a5188a661412c6c9a45"
+  },
+  "bedrock": {
+    "repository": "https://github.com/FragrantResult186/cubiomes-bedrock.git",
+    "commit": "533cbe2a51a3d8cd41547040d50d91a00ac76e43"
+  },
+  "compiler": "Emscripten 4.0.15",
+  "bedrock_rules": {
+    "version": "1.26.45.1",
+    "source": "https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.26.45.1.zip",
+    "map_model": "MC_26_40 (26.40.27); experimental for 26.45"
+  }
+}

@@ -6,7 +6,7 @@ export default defineConfig({
   // Only matters for GitHub Pages, which serves from /<repo-name>/ instead
   // of the domain root. Vercel/Netlify ignore this (they serve from root),
   // so it's safe to leave set either way.
-  base: '/Minecraftorecalculator/',
+  base: './',
   plugins: [
     react(),
     VitePWA({
@@ -16,11 +16,11 @@ export default defineConfig({
       // extended further once the wasm build artifacts actually exist.
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Minecraft Ore Finder',
-        short_name: 'Ore Finder',
-        description: 'Find ore locations from your Minecraft world seed',
-        theme_color: '#15120f',
-        background_color: '#15120f',
+        name: 'Ore Atlas by Vignesh',
+        short_name: 'Ore Atlas',
+        description: 'Explore biome maps and unconfirmed ore candidates from your Minecraft seed',
+        theme_color: '#1b271f',
+        background_color: '#1b271f',
         display: 'standalone',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
@@ -28,7 +28,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,wasm,png,svg}'],
+        globPatterns: ['**/*.{js,css,html,wasm,png,svg,json,txt}'],
+        maximumFileSizeToCacheInBytes: 4000000,
       },
     }),
   ],

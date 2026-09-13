@@ -1,0 +1,74 @@
+ORE ATLAS BY M S VIGNESH
+
+Unofficial community tool. Not approved by Mojang or Microsoft.
+
+Java maps and candidate generation: xpple/cubiomes
+Bedrock maps: FragrantResult186/cubiomes-bedrock
+
+MIT License
+
+Copyright (c) 2020 Cubitect
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+MIT License
+
+Copyright (c) 2020 Cubitect
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+GAME TEXTURES
+(c) Mojang AB. All rights reserved.
+
+By downloading the files in this repository, you agree to the [Minecraft End User License Agreement](https://www.minecraft.net/en-us/eula) and that these files are subject to its terms.
+Bedrock feature rule parameters: official Bedrock server 1.26.45.1. Individual resource paths are recorded in engine/bedrock-rules.json.
+
+{
+  "java": {
+    "repository": "https://github.com/xpple/cubiomes.git",
+    "commit": "0a3db3a4c9f4b1740bb30a5188a661412c6c9a45"
+  },
+  "bedrock": {
+    "repository": "https://github.com/FragrantResult186/cubiomes-bedrock.git",
+    "commit": "533cbe2a51a3d8cd41547040d50d91a00ac76e43"
+  },
+  "compiler": "Emscripten 4.0.15",
+  "bedrock_rules": {
+    "version": "1.26.45.1",
+    "source": "https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.26.45.1.zip",
+    "map_model": "MC_26_40 (26.40.27); experimental for 26.45"
+  }
+}
+Expedition QR generation: node-qrcode (MIT). QR image decoding: jsQR (Apache 2.0). Full licenses bundled as LICENSE-qrcode.txt and LICENSE-jsqr.txt.

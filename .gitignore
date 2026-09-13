@@ -3,10 +3,22 @@ dist/
 dist-ssr/
 *.local
 .DS_Store
-native/cubiomes/
-# NOTE: cubiomes.mjs is intentionally NOT ignored — a placeholder stub is
-# checked in so the app builds before the real WASM engine is compiled
-# (see src/engine/wasm/cubiomes.mjs's own header). The real emcc build
-# overwrites it in place with the same filename.
-src/engine/wasm/cubiomes.wasm
 *.tsbuildinfo
+.env
+.env.*
+.signing/
+
+android/build/
+*.jks
+*.keystore
+*.idsig
+backend/data/
+# Private credentials and local runtime artifacts
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+__pycache__/
+*.pyc

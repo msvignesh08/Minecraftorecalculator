@@ -1,0 +1,142 @@
+[
+  {
+    "name": "diamond_ore",
+    "display_title": "diamond_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/diamond_ore.png",
+    "encoding": "base64",
+    "sha": "5182e1cdc2b88516e135ee56075ee537fc171ad6"
+  },
+  {
+    "name": "iron_ore",
+    "display_title": "iron_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/iron_ore.png",
+    "encoding": "base64",
+    "sha": "8fa68577423a7b730acef8866daf8d74dc484bc8"
+  },
+  {
+    "name": "coal_ore",
+    "display_title": "coal_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/coal_ore.png",
+    "encoding": "base64",
+    "sha": "2a21d2bd0f7b56361e1a3072dbf4f637c539d727"
+  },
+  {
+    "name": "copper_ore",
+    "display_title": "copper_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/copper_ore.png",
+    "encoding": "base64",
+    "sha": "c7aea0c0b7d0688485b881e392b510f3f1331791"
+  },
+  {
+    "name": "gold_ore",
+    "display_title": "gold_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/gold_ore.png",
+    "encoding": "base64",
+    "sha": "cb1c9cc676a6f88786b5210653d968e0c4f9c99d"
+  },
+  {
+    "name": "redstone_ore",
+    "display_title": "redstone_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/redstone_ore.png",
+    "encoding": "base64",
+    "sha": "b708697055fd99ccb8e13646bfbdfbb172ac6d82"
+  },
+  {
+    "name": "lapis_ore",
+    "display_title": "lapis_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/lapis_ore.png",
+    "encoding": "base64",
+    "sha": "7c212c3ed9ef2befc8ae2727dcf17e1737f3f1e9"
+  },
+  {
+    "name": "emerald_ore",
+    "display_title": "emerald_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/emerald_ore.png",
+    "encoding": "base64",
+    "sha": "425191c495cf7e46fb31362a51e3030fdb38b3cf"
+  },
+  {
+    "name": "quartz_ore",
+    "display_title": "quartz_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/quartz_ore.png",
+    "encoding": "base64",
+    "sha": "9036e3809b446112808fd46c89938d48cd25ec68"
+  },
+  {
+    "name": "nether_gold_ore",
+    "display_title": "nether_gold_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/nether_gold_ore.png",
+    "encoding": "base64",
+    "sha": "7029bc0b9988edd77c5abc0d4150fb676de7b596"
+  },
+  {
+    "name": "ancient_debris_side",
+    "display_title": "ancient_debris_side.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/ancient_debris_side.png",
+    "encoding": "base64",
+    "sha": "498d98a24bcf4875b2f29252785f4d33cf50e1c8"
+  },
+  {
+    "name": "ancient_debris_top",
+    "display_title": "ancient_debris_top.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/ancient_debris_top.png",
+    "encoding": "base64",
+    "sha": "3893cddcc5932facf0678803af72a73247794983"
+  },
+  {
+    "name": "deepslate_diamond_ore",
+    "display_title": "deepslate_diamond_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/deepslate/deepslate_diamond_ore.png",
+    "encoding": "base64",
+    "sha": "86772d0203b65d6b9493542f05a4615ac482e1f3"
+  },
+  {
+    "name": "deepslate_iron_ore",
+    "display_title": "deepslate_iron_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/deepslate/deepslate_iron_ore.png",
+    "encoding": "base64",
+    "sha": "96c170ee802a6b64765aa7b0c841b31ec42b041c"
+  },
+  {
+    "name": "deepslate_coal_ore",
+    "display_title": "deepslate_coal_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/deepslate/deepslate_coal_ore.png",
+    "encoding": "base64",
+    "sha": "3b9768c02f9e20ee0b1588a8500bf7772ee2d4b6"
+  },
+  {
+    "name": "deepslate_copper_ore",
+    "display_title": "deepslate_copper_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/deepslate/deepslate_copper_ore.png",
+    "encoding": "base64",
+    "sha": "6dc547de0460c7480a061b5c551b1d47faa6251e"
+  },
+  {
+    "name": "deepslate_gold_ore",
+    "display_title": "deepslate_gold_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/deepslate/deepslate_gold_ore.png",
+    "encoding": "base64",
+    "sha": "be52acbe4ce0de45ecbd3207373e25edda17bc61"
+  },
+  {
+    "name": "deepslate_redstone_ore",
+    "display_title": "deepslate_redstone_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/deepslate/deepslate_redstone_ore.png",
+    "encoding": "base64",
+    "sha": "6a1419a80622b4cc57db8ee323767724bf58f624"
+  },
+  {
+    "name": "deepslate_lapis_ore",
+    "display_title": "deepslate_lapis_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/deepslate/deepslate_lapis_ore.png",
+    "encoding": "base64",
+    "sha": "0e9c8cceb7fcca9067604dccfeced8e0825f5cc2"
+  },
+  {
+    "name": "deepslate_emerald_ore",
+    "display_title": "deepslate_emerald_ore.png",
+    "display_url": "https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/textures/blocks/deepslate/deepslate_emerald_ore.png",
+    "encoding": "base64",
+    "sha": "31720fda5f3ec2794da354c5bc41df8833552756"
+  }
+]

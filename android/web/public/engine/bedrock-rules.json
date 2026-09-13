@@ -1,0 +1,906 @@
+[
+  {
+    "id": "minecraft:overworld_underground_copper_ore_feature",
+    "ore": "copper",
+    "distribution": {
+      "iterations": 16,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "triangle",
+        "extent": [
+          -16,
+          112
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": {
+      "all_of": [
+        {
+          "any_of": [
+            {
+              "test": "has_biome_tag",
+              "operator": "==",
+              "value": "overworld"
+            },
+            {
+              "test": "has_biome_tag",
+              "operator": "==",
+              "value": "overworld_generation"
+            }
+          ]
+        },
+        {
+          "test": "has_biome_tag",
+          "operator": "!=",
+          "value": "dripstone_caves"
+        }
+      ]
+    },
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_copper_ore_feature.json"
+  },
+  {
+    "id": "minecraft:dripstone_caves_underground_copper_ore_feature",
+    "ore": "copper",
+    "distribution": {
+      "iterations": 16,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "triangle",
+        "extent": [
+          -16,
+          112
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": {
+      "test": "has_biome_tag",
+      "operator": "==",
+      "value": "dripstone_caves"
+    },
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/dripstone_caves_underground_copper_ore_feature.json"
+  },
+  {
+    "id": "minecraft:mesa_underground_gold_ore_feature",
+    "ore": "gold",
+    "distribution": {
+      "iterations": 50,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "uniform",
+        "extent": [
+          32,
+          256
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "test": "has_biome_tag",
+        "operator": "==",
+        "value": "mesa"
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/mesa_underground_gold_ore_feature.json"
+  },
+  {
+    "id": "minecraft:mountains_underground_coal_ore_feature",
+    "ore": "coal",
+    "distribution": {
+      "iterations": 20,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "uniform",
+        "extent": [
+          128,
+          256
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": {
+      "test": "has_biome_tag",
+      "operator": "==",
+      "value": "mountains"
+    },
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/mountains_underground_coal_ore_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_coal_ore_lower_feature",
+    "ore": "coal",
+    "distribution": {
+      "iterations": 20,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "triangle",
+        "extent": [
+          0,
+          192
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_coal_ore_lower_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_coal_ore_upper_feature",
+    "ore": "coal",
+    "distribution": {
+      "iterations": 30,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "uniform",
+        "extent": [
+          136,
+          320
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_coal_ore_upper_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_diamond_ore_buried_feature",
+    "ore": "diamond",
+    "distribution": {
+      "iterations": 4,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "triangle",
+        "extent": [
+          -144,
+          16
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_diamond_ore_buried_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_diamond_ore_feature",
+    "ore": "diamond",
+    "distribution": {
+      "iterations": 7,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "triangle",
+        "extent": [
+          -144,
+          16
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_diamond_ore_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_diamond_ore_large_feature",
+    "ore": "diamond",
+    "distribution": {
+      "iterations": 1,
+      "scatter_chance": {
+        "numerator": 1,
+        "denominator": 9
+      },
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "triangle",
+        "extent": [
+          -144,
+          16
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_diamond_ore_large_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_emerald_ore_feature",
+    "ore": "emerald",
+    "distribution": {
+      "iterations": 100,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "triangle",
+        "extent": [
+          -16,
+          480
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "mountains"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "extreme_hills"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_emerald_ore_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_gold_ore_feature",
+    "ore": "gold",
+    "distribution": {
+      "iterations": 4,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "triangle",
+        "extent": [
+          -64,
+          32
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_gold_ore_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_gold_ore_lower_feature",
+    "ore": "gold",
+    "distribution": {
+      "iterations": 1,
+      "scatter_chance": {
+        "numerator": 1,
+        "denominator": 2
+      },
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "uniform",
+        "extent": [
+          -64,
+          -48
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_gold_ore_lower_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_iron_ore_middle_feature",
+    "ore": "iron",
+    "distribution": {
+      "iterations": 10,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "triangle",
+        "extent": [
+          -24,
+          56
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_iron_ore_middle_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_iron_ore_small_feature",
+    "ore": "iron",
+    "distribution": {
+      "iterations": 10,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "uniform",
+        "extent": [
+          -64,
+          72
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_iron_ore_small_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_iron_ore_upper_feature",
+    "ore": "iron",
+    "distribution": {
+      "iterations": 90,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "triangle",
+        "extent": [
+          80,
+          384
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_iron_ore_upper_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_lapis_ore_buried_feature",
+    "ore": "lapis",
+    "distribution": {
+      "iterations": 4,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "uniform",
+        "extent": [
+          -64,
+          64
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_lapis_ore_buried_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_lapis_ore_feature",
+    "ore": "lapis",
+    "distribution": {
+      "iterations": 2,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "triangle",
+        "extent": [
+          -32,
+          32
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_lapis_ore_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_redstone_ore_feature",
+    "ore": "redstone",
+    "distribution": {
+      "iterations": 4,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "uniform",
+        "extent": [
+          -64,
+          15
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_redstone_ore_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_redstone_ore_lower_feature",
+    "ore": "redstone",
+    "distribution": {
+      "iterations": 8,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "triangle",
+        "extent": [
+          -96,
+          -32
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.18.0/feature_rules/overworld_underground_redstone_ore_lower_feature.json"
+  },
+  {
+    "id": "minecraft:overworld_underground_diamond_ore_feature_square",
+    "ore": "diamond",
+    "distribution": {
+      "iterations": 2,
+      "coordinate_eval_order": "zyx",
+      "x": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      },
+      "y": {
+        "distribution": "uniform",
+        "extent": [
+          -64,
+          -4
+        ]
+      },
+      "z": {
+        "distribution": "uniform",
+        "extent": [
+          0,
+          16
+        ]
+      }
+    },
+    "filter": [
+      {
+        "any_of": [
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld"
+          },
+          {
+            "test": "has_biome_tag",
+            "operator": "==",
+            "value": "overworld_generation"
+          }
+        ]
+      }
+    ],
+    "source": "behavior_packs/vanilla_1.20.30/feature_rules/overworld_underground_diamond_ore_feature_square.json"
+  }
+]

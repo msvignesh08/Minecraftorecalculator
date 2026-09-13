@@ -1,0 +1,1 @@
+import{getMap,search}from'./core.js';self.onmessage=async({data:q})=>{try{const result=q.type==='map'?await getMap(q):await search(q,progress=>self.postMessage({id:q.id,progress}));self.postMessage({id:q.id,result})}catch(e){self.postMessage({id:q.id,error:e.message||String(e)})}};

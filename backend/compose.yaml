@@ -1,0 +1,22 @@
+services:
+  crew:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - crew-data:/data
+  https:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      CREW_DOMAIN: ${CREW_DOMAIN:?Set your Crew server domain}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on:
+      - crew
+volumes:
+  crew-data:
+  caddy-data:

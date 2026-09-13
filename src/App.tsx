@@ -1,242 +1,62 @@
-import React, { useRef, useState } from 'react';
-import { MapCanvas, MapCanvasHandle } from './map/MapCanvas';
-import { OreMarkerData, WaypointData } from './map/render/renderMarkers';
-import { DIG_SAFETY_NOTE } from './ui/copy';
-import { SearchPanel, SearchFormValues } from './ui/SearchPanel';
-import { OreResultsList, OreResultItem } from './ui/OreResultsList';
-import { StrataGauge } from './ui/StrataGauge';
-import { oreMetaById } from './ui/oreCatalog';
-import { parseWorldSeed } from './engine/rng/seedParser';
-import { findOres, OreSearchResult } from './engine/unified/oreCalculator';
-import { OreType as WasmOreType } from './engine/wasm/cubiomesEngine';
-import { oresToCsv } from './storage/db';
-
-/**
- * App.tsx
- *
- * Real search flow wired to the unified ore calculator (falls back to
- * the labeled-unconfirmed path until the WASM engine is actually built
- * — see native/cubiomes-shim/BUILD.md). This replaces the earlier
- * hardcoded-mock-markers version once and for all.
- */
-
-// Catalog id -> the wasm engine's enum. Only entries that exist in
-// WasmOreType are listed; ids without an entry here fall through to the
-// fallback path's own hardcoded handling (currently diamond only).
-const CATALOG_TO_WASM_ORE: Partial<Record<string, WasmOreType>> = {
-  diamond: WasmOreType.DiamondOre,
-};
-
-const DIMENSION_TO_INT: Record<SearchFormValues['dimension'], number> = {
-  overworld: 0,
-  nether: -1,
-  end: 1,
-};
-
-export function App() {
-  const mapRef = useRef<MapCanvasHandle>(null);
-
-  const [form, setForm] = useState<SearchFormValues>({
-    edition: 'java',
-    version: '26.2',
-    seedInput: '',
-    dimension: 'overworld',
-    x: '0',
-    z: '0',
-    radius: 500,
-    oreId: 'diamond',
-  });
-
-  const [results, setResults] = useState<OreResultItem[]>([]);
-  const [foundIds, setFoundIds] = useState<Set<string>>(new Set());
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [warning, setWarning] = useState<string | undefined>(undefined);
-  const [player, setPlayer] = useState<{ x: number; y: number; z: number } | null>(null);
-  const [activeYLevel, setActiveYLevel] = useState<number | null>(-59);
-
-  const handleSearch = async () => {
-    setError(null);
-    setWarning(undefined);
-
-    const x = Number(form.x);
-    const z = Number(form.z);
-    if (!Number.isFinite(x) || !Number.isFinite(z)) {
-      setError('X and Z need to be numbers.');
-      return;
-    }
-
-    let seed: bigint;
-    try {
-      seed = parseWorldSeed(form.seedInput).seed;
-    } catch (e) {
-      setError((e as Error).message);
-      return;
-    }
-
-    const wasmOreType = CATALOG_TO_WASM_ORE[form.oreId];
-    if (wasmOreType === undefined) {
-      setError(`${oreMetaById(form.oreId)?.displayName ?? form.oreId} isn't wired to a calculation path yet.`);
-      return;
-    }
-
-    setIsSearching(true);
-    setPlayer({ x, y: activeYLevel ?? -59, z });
-
-    try {
-      const result: OreSearchResult = await findOres({
-        worldSeed: seed,
-        mcVersionLabel: form.version as '26.2' | '26.1',
-        dimension: DIMENSION_TO_INT[form.dimension],
-        oreType: wasmOreType,
-        centerX: x,
-        centerZ: z,
-        radius: form.radius,
-      });
-
-      const mapped: OreResultItem[] = result.ores.map((o, i) => ({
-        id: `${o.x}-${o.y}-${o.z}-${i}`,
-        oreId: form.oreId,
-        x: o.x,
-        y: o.y,
-        z: o.z,
-        chunkX: o.chunkX,
-        chunkZ: o.chunkZ,
-        distance: Math.sqrt((o.x - x) ** 2 + (o.z - z) ** 2),
-      }));
-
-      setResults(mapped);
-      setFoundIds(new Set());
-      setWarning(result.warning);
-      mapRef.current?.centerOn(x, z);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  const markers: OreMarkerData[] = results
-    .filter((r) => !foundIds.has(r.id))
-    .map((r) => ({ id: r.id, oreId: r.oreId, x: r.x, y: r.y, z: r.z }));
-
-  const waypoints: WaypointData[] = [];
-  const selected = results.find((r) => r.id === selectedId) ?? null;
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--void)', color: 'var(--torch)' }}>
-      <header
-        style={{
-          padding: '10px 16px',
-          borderBottom: '1px solid var(--hairline)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          background: 'var(--stone)',
-        }}
-      >
-        <strong style={{ fontFamily: 'var(--font-display)', fontSize: 15, letterSpacing: 0.3 }}>⛏ Minecraft Ore Finder</strong>
-        <span style={{ fontSize: 11, color: 'var(--torch-dim)' }}>Java 26.2</span>
-      </header>
-
-      <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
-        <StrataGauge
-          selectedOreId={form.oreId}
-          activeYLevel={activeYLevel}
-          playerY={player?.y}
-          onYLevelChange={setActiveYLevel}
-        />
-
-        <SearchPanel values={form} onChange={setForm} onSubmit={handleSearch} isSearching={isSearching} error={error} />
-
-        <div style={{ flex: 1, position: 'relative' }}>
-          <MapCanvas
-            ref={mapRef}
-            ores={markers}
-            player={player}
-            waypoints={waypoints}
-            selectedOreId={selectedId}
-            showChunkBorders
-            showChunkLabels
-            initialCenter={{ x: 0, z: 0 }}
-            initialZoom={6}
-            onSelectOre={setSelectedId}
-          />
-
-          <div style={{ position: 'absolute', right: 12, top: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <MapButton label="+" onClick={() => mapRef.current?.zoomIn()} />
-            <MapButton label="−" onClick={() => mapRef.current?.zoomOut()} />
-            <MapButton label="⌖" onClick={() => player && mapRef.current?.centerOn(player.x, player.z)} />
-          </div>
-
-          {selected && (
-            <div
-              style={{
-                position: 'absolute',
-                left: 12,
-                bottom: 12,
-                background: 'rgba(20,18,15,0.95)',
-                border: '1px solid var(--hairline)',
-                borderRadius: 'var(--radius-md)',
-                padding: 12,
-                fontSize: 13,
-                lineHeight: 1.6,
-                maxWidth: 260,
-              }}
-            >
-              <div>
-                <strong>{oreMetaById(selected.oreId)?.icon} {oreMetaById(selected.oreId)?.displayName}</strong>
-              </div>
-              <div className="mono">
-                X: {selected.x} Y: {selected.y} Z: {selected.z}
-              </div>
-              <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--hairline)', fontSize: 11, opacity: 0.75, lineHeight: 1.4 }}>
-                ⚠️ {DIG_SAFETY_NOTE}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <OreResultsList
-          results={results}
-          foundIds={foundIds}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-          onToggleFound={(id) => setFoundIds((prev) => new Set(prev).add(id))}
-          onExportCsv={() => {
-            const csv = oresToCsv(results.filter((r) => !foundIds.has(r.id)));
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'ore-locations.csv';
-            a.click();
-            URL.revokeObjectURL(url);
-          }}
-          warning={warning}
-        />
-      </div>
-    </div>
-  );
-}
-
-function MapButton({ label, onClick }: { label: string; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        width: 40,
-        height: 40,
-        borderRadius: 8,
-        border: '1px solid var(--hairline)',
-        background: 'rgba(20,18,15,0.9)',
-        color: 'var(--torch)',
-        fontSize: 18,
-        cursor: 'pointer',
-      }}
-    >
-      {label}
-    </button>
-  );
+import React,{useEffect,useRef,useState,useMemo,useCallback}from'react';
+import{AtlasMap,MapHandle}from'./AtlasMap';import{ores,versions,structures,targetTexture,texture,Tile,Target,WorldSettings}from'./atlasCatalog';import'./styles/atlas.css';
+const initial:WorldSettings={seed:'0',edition:'java',version:'262',dimension:0};
+const read=<T,>(k:string,f:T):T=>{try{return JSON.parse(localStorage.getItem(k)||'null')??f}catch{return f}};
+const write=(k:string,v:unknown)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch{return false}};
+const newWorker=()=>new Worker(`${import.meta.env.BASE_URL}engine/worker.js`,{type:'module'});
+const fmt=(n:number)=>Math.round(n).toLocaleString('en-US');
+function validSeed(s:string,edition:string){s=s.trim();if(!s)throw Error('Enter your world seed.');if(!/^-?\d+$/.test(s)){if(edition!=='java')throw Error('Paste the numeric seed from Bedrock world settings.');let h=0;for(let i=0;i<s.length;i++)h=(Math.imul(31,h)+s.charCodeAt(i))|0;return String(h);}let n=BigInt(s);if(n<-(1n<<63n)||n>(1n<<63n)-1n)throw Error('That seed is outside the signed 64-bit range.');return n.toString()}
+function Icon({name}:{name:string}){const p:Record<string,string>={map:'m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3Z M9 3v15 M15 6v15',search:'m21 21-5-5 M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0',pin:'M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0 M15 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0',settings:'M4 21v-7 M4 10V3 M12 21v-9 M12 8V3 M20 21v-5 M20 12V3 M1 10h6 M9 12h6 M17 16h6',plus:'M12 5v14 M5 12h14',minus:'M5 12h14',locate:'M12 2v4 M12 18v4 M2 12h4 M18 12h4 M18 12a6 6 0 1 1-12 0 6 6 0 0 1 12 0',layers:'m12 3 10 6-10 6L2 9Z M2 13l10 6 10-6 M2 17l10 6 10-6',close:'m6 6 12 12 M6 18 18 6',download:'M12 3v12 M7 10l5 5 5-5 M4 17v4h16v-4',info:'M12 16v-4 M12 8h.01 M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',copy:'M9 9h12v12H9Z M15 9V3H3v12h6',check:'m4 12 5 5L20 6'};return <svg viewBox="0 0 24 24" aria-hidden="true"><path d={p[name]||p.map}/></svg>}
+export function App(){
+ const stored=read<WorldSettings>('atlas-world-v3',initial),safe=versions[stored.edition]?.some(v=>v[0]===stored.version)?stored:initial;
+ const[world,setWorld]=useState<WorldSettings>(safe),[draft,setDraft]=useState<WorldSettings>(safe),[oreId,setOreId]=useState('diamond'),[x,setX]=useState('0'),[z,setZ]=useState('0'),[radius,setRadius]=useState(48),[minY,setMinY]=useState(-64),[maxY,setMaxY]=useState(16),[slice,setSlice]=useState(64),[grid,setGrid]=useState(false),[showStructures,setStructures]=useState(true),[structureMask,setStructureMask]=useState(32767),[showBiomes,setBiomes]=useState(true);
+ const[view,setView]=useState({x:0,z:0,span:2400,zoom:.4}),[tile,setTile]=useState<Tile|null>(null),[mapBusy,setMapBusy]=useState(true),[mapError,setMapError]=useState(''),[targets,setTargets]=useState<Target[]>([]),[selected,setSelected]=useState<Target|null>(null),[point,setPoint]=useState<{x:number;z:number;name:string}|null>(null),[busy,setBusy]=useState(false),[progress,setProgress]=useState(0),[error,setError]=useState(''),[searched,setSearched]=useState(false),[limited,setLimited]=useState(false),[source,setSource]=useState(''),[tab,setTab]=useState('map'),[listTab,setListTab]=useState('targets'),[found,setFound]=useState<string[]>([]),[pins,setPins]=useState<(Target&{world:string})[]>(read('atlas-pins-v3',[])),[toast,setToast]=useState(''),[layerPanel,setLayerPanel]=useState(false),[retry,setRetry]=useState(0);
+ const map=useRef<MapHandle>(null),mapWorker=useRef<Worker|null>(null),searchWorker=useRef<Worker|null>(null),mapId=useRef(0),searchId=useRef(0),info=useRef<HTMLDialogElement>(null);const ore=ores.find(o=>o.id===oreId)!;const worldKey=[world.edition,world.version,world.seed,world.dimension].join(':');const activePins=pins.filter(p=>p.world===worldKey);const visible=useMemo(()=>targets.filter(t=>!found.includes(t.id)),[targets,found]);const title=world.dimension===0?'Overworld':world.dimension===-1?'The Nether':'The End';
+ const notify=(s:string)=>setToast(s);useEffect(()=>{if(!toast)return;const t=setTimeout(()=>setToast(''),2600);return()=>clearTimeout(t)},[toast]);
+ const onView=useCallback((v:typeof view)=>setView(v),[]);
+ useEffect(()=>{mapWorker.current=newWorker();return()=>{mapWorker.current?.terminate();searchWorker.current?.terminate()}},[]);
+ useEffect(()=>{const id=++mapId.current;const t=setTimeout(()=>{const w=mapWorker.current;if(!w)return;setMapBusy(true);setMapError('');w.onmessage=({data})=>{if(data.id!==mapId.current)return;if(data.error){setMapError(data.error);setMapBusy(false)}else{setTile(data.result);setMapBusy(false)}};w.onerror=()=>{setMapBusy(false);setMapError('Map engine could not load. Reconnect once and try again.')};w.postMessage({...world,type:'map',id,x:view.x,z:view.z,span:view.span,y:slice,mask:showStructures?structureMask:0})},300);return()=>clearTimeout(t)},[world,view,slice,showStructures,structureMask,retry]);
+ useEffect(()=>{setTile(null);setSelected(null);setPoint(null)},[world]);
+ function cancel(){searchId.current++;searchWorker.current?.terminate();searchWorker.current=null;setBusy(false)}
+ function chooseOre(id:string){const o=ores.find(v=>v.id===id)!;setOreId(id);setMinY(o.range[0]);setMaxY(Math.min(319,o.range[1]));setDraft(d=>({...d,dimension:o.dim}));}
+ function scan(e?:React.FormEvent){e?.preventDefault();try{let s=validSeed(draft.seed,draft.edition);const cx=Number(x),cz=Number(z);if(!x.trim()||!z.trim()||!Number.isInteger(cx)||!Number.isInteger(cz)||Math.abs(cx)>29900000||Math.abs(cz)>29900000)throw Error('Enter whole-number X and Z coordinates within ±29,900,000.');if(minY>maxY)throw Error('Minimum Y must be below maximum Y.');const next={...draft,seed:s};cancel();const id=++searchId.current;setWorld(next);setDraft(next);write('atlas-world-v3',next);map.current?.center(cx,cz);setTargets([]);setSelected(null);setPoint(null);setFound([]);setError('');setBusy(true);setProgress(0);setSearched(false);setLimited(false);setTab('map');const w=newWorker();searchWorker.current=w;w.onmessage=({data})=>{if(data.id!==searchId.current)return;if(data.progress!==undefined){setProgress(data.progress);return}setBusy(false);setSearched(true);if(data.error)setError(data.error);else{setTargets(data.result.targets);setLimited(data.result.limited);setSource(data.result.source)}w.terminate();searchWorker.current=null};w.onerror=()=>{setBusy(false);setError('The search engine could not load. Reconnect once and try again.');w.terminate()};w.postMessage({...next,type:'search',id,x:cx,z:cz,radius,minY,maxY,oreId})}catch(e){setError((e as Error).message)}}
+ function dimension(dim:number){cancel();setDraft(d=>({...d,dimension:dim}));setWorld(w=>({...w,dimension:dim}));setTargets([]);setSearched(false);setError('');const o=ores.find(o=>o.dim===dim);if(o)chooseOre(o.id)}
+ const select=(t:Target)=>{setSelected(t);setPoint(null);map.current?.center(t.x,t.z);setTab('map')};
+ async function copy(text:string){try{await navigator.clipboard.writeText(text);notify('Coordinates copied')}catch{notify('Copy unavailable here. Coordinates are shown on the card.')}}
+ function pin(t:Target){if(pins.length>=300){notify('You have reached the 300-pin limit.');return}const next=[...pins.filter(p=>!(p.world===worldKey&&p.id===t.id)),{...t,world:worldKey}];if(write('atlas-pins-v3',next)){setPins(next);notify('Pin saved on this device')}else notify('Device storage is full')}
+ function unpin(t:Target){const next=pins.filter(p=>!(p.world===worldKey&&p.id===t.id));if(write('atlas-pins-v3',next))setPins(next)}
+ function csv(){const rows=['status,edition,version,seed,ore,x,y,z',...visible.map(t=>`unconfirmed,${world.edition},${world.version},${world.seed},${t.oreId},${t.x},${t.y},${t.z}`)];const u=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'})),a=document.createElement('a');a.href=u;a.download='ore-atlas-candidates.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+ const hint=world.edition==='bedrock'?'Placement centres · not confirmed blocks':'Candidate blocks · terrain checks incomplete';
+ return <div className="atlas-app">
+ <header className="app-header"><div className="identity"><img src={texture('deepslate_diamond_ore')} alt=""/><div><h1>ORE ATLAS<span>MINECRAFT SEED EXPLORER</span></h1></div></div><div className="header-right"><span className="creator">by <b>Vignesh</b></span><span className="local-badge">ON-DEVICE ENGINE</span><button className="icon-button" aria-label="About and accuracy" onClick={()=>info.current?.showModal()}><Icon name="info"/></button></div></header>
+ <div className="workspace">
+ <aside className={'search-sidebar '+(tab==='search'?'mobile-open':'')}><div className="panel-heading"><div><span className="eyebrow">YOUR EXPEDITION</span><h2>Find your next vein.</h2></div><button className="mobile-only icon-button" aria-label="Close search" onClick={()=>setTab('map')}><Icon name="close"/></button></div>
+ <form onSubmit={scan}><div className="edition-switch" aria-label="Minecraft edition">{(['java','bedrock']as const).map(e=><button key={e} type="button" className={draft.edition===e?'selected':''} aria-pressed={draft.edition===e} onClick={()=>setDraft(d=>({...d,edition:e,version:versions[e][0][0]}))}>{e==='java'?'Java Edition':'Bedrock / mobile'}</button>)}</div>
+ <label className="field">World seed<input value={draft.seed} onChange={e=>setDraft(d=>({...d,seed:e.target.value}))} placeholder="Paste your world seed" spellCheck={false} required className="mono"/></label><div className="form-row"><label className="field">Game version<select value={draft.version} onChange={e=>setDraft(d=>({...d,version:e.target.value}))}>{versions[draft.edition].map(([v,l])=><option key={v} value={v}>{l}</option>)}</select></label><label className="field">Dimension<select value={draft.dimension} onChange={e=>dimension(Number(e.target.value))}><option value={0}>Overworld</option><option value={-1}>Nether</option><option value={1}>End</option></select></label></div>
+ <div className="section-label"><h3>Choose an ore</h3><span>11 resources</span></div><div className="ore-inventory">{ores.map(o=><button type="button" key={o.id} title={o.name} aria-label={o.name} aria-pressed={oreId===o.id} className={'ore-slot '+(oreId===o.id?'selected':'')} style={{'--ore-color':o.color}as React.CSSProperties} onClick={()=>chooseOre(o.id)}><img src={texture(o.image)} alt=""/><span>{o.name.replace('Nether ','').replace('Ancient debris','Debris').replace('Lapis lazuli','Lapis')}</span></button>)}</div>
+ <div className="form-row"><label className="field">Centre X<input type="number" value={x} min={-29900000} max={29900000} step={1} onChange={e=>setX(e.target.value)} required/></label><label className="field">Centre Z<input type="number" value={z} min={-29900000} max={29900000} step={1} onChange={e=>setZ(e.target.value)} required/></label></div><button type="button" className="text-button" onClick={()=>{setX(String(view.x));setZ(String(view.z))}}><Icon name="locate"/>Use map centre</button>
+ <label className="field radius-label">Search radius <strong>{radius} blocks</strong><input type="range" min={16} max={128} step={16} value={radius} onChange={e=>setRadius(Number(e.target.value))}/></label><div className="form-row"><label className="field">Minimum Y<input type="number" min={-64} max={319} value={minY} onChange={e=>setMinY(Number(e.target.value))}/></label><label className="field">Maximum Y<input type="number" min={-64} max={319} value={maxY} onChange={e=>setMaxY(Number(e.target.value))}/></label></div>
+ <button className="primary scan" disabled={busy}><Icon name="search"/>{busy?`Scanning · ${progress}%`:`Find ${ore.name.toLowerCase()}`}</button>{busy&&<button type="button" className="text-button" onClick={cancel}>Cancel search</button>}<p className="micro-note">Seeds stay on your device. No account required.</p></form>
+ <div className="mining-note"><img src={texture(ore.image)} alt=""/><div><b>{ore.name} field notes</b><p>{ore.note}</p><button className="text-button" onClick={()=>{setMinY(Math.max(-64,ore.peak-6));setMaxY(Math.min(319,ore.peak+6))}}>Focus around Y {ore.peak}</button></div></div>
+ </aside>
+ <main className="map-panel"><AtlasMap ref={map} tile={showBiomes?tile:null} targets={visible} pins={activePins} selected={selected} grid={grid} showStructures={showStructures} onView={onView} onSelect={select} onPoint={(x,z,name)=>{setSelected(null);setPoint({x,z,name})}}/>
+ <div className="map-toolbar"><div className="dimension-tabs">{[[0,'Overworld'],[-1,'Nether'],[1,'End']].map(([d,n])=><button key={d} className={world.dimension===d?'selected':''} onClick={()=>dimension(Number(d))}>{n}</button>)}</div><button className="map-button layers-button" onClick={()=>setLayerPanel(!layerPanel)} aria-expanded={layerPanel}><Icon name="layers"/>Layers</button></div>
+ <div className="map-world"><b>{title}</b><span>{world.edition==='java'?'Java':'Bedrock'} {versions[world.edition].find(v=>v[0]===world.version)?.[1]} · Seed {world.seed}</span></div>
+ <div className="compass">N<span>↑</span></div><div className="zoom-stack"><button aria-label="Zoom in" onClick={()=>map.current?.zoom(1.8)}><Icon name="plus"/></button><button aria-label="Zoom out" onClick={()=>map.current?.zoom(1/1.8)}><Icon name="minus"/></button><button aria-label="Go to world origin" onClick={()=>map.current?.center(0,0)}><Icon name="locate"/></button></div>
+ {layerPanel&&<section className="layers-panel"><h3>Map layers</h3>{[['Biome colours',showBiomes,setBiomes],['Structure starts',showStructures,setStructures],['Chunk borders',grid,setGrid]].map(([n,v,fn])=><label key={String(n)}><span>{String(n)}</span><input type="checkbox" checked={Boolean(v)} onChange={e=>(fn as (b:boolean)=>void)(e.target.checked)}/></label>)}<label>Biome slice Y<input type="number" min={-64} max={319} value={slice} onChange={e=>setSlice(Math.max(-64,Math.min(319,Number(e.target.value))))}/></label><p>Biome samples, not terrain elevations.</p><details><summary>Structure filters</summary><div className="structure-filters">{structures.map((name,i)=><label key={name}><input type="checkbox" checked={!!(structureMask&(1<<i))} onChange={e=>setStructureMask(m=>e.target.checked?m|(1<<i):m&~(1<<i))}/>{name}</label>)}</div></details><div className="biome-legend">{tile?.legend.map(l=><span key={l.id}><i style={{background:l.color}}/>{l.name.replace(/_/g,' ')}</span>)}</div></section>}
+ {mapBusy&&<div className="map-status" role="status"><span className="spinner"/>Drawing biomes…</div>}{mapError&&<div className="map-status error" role="alert">{mapError}<button onClick={()=>setRetry(v=>v+1)}>Retry</button></div>}
+ {busy&&<div className="search-progress" role="status"><b>Following the seed… {progress}%</b><progress max={100} value={progress}/><button onClick={cancel}>Cancel</button></div>}
+ {error&&<div className="search-error" role="alert"><b>Search unavailable</b><p>{error}</p><button onClick={()=>{setTab('search');setError('')}}>Edit search</button></div>}
+ {(selected||point)&&<section className="selection-card"><button className="close icon-button" aria-label="Close selection" onClick={()=>{setSelected(null);setPoint(null)}}><Icon name="close"/></button><span className="eyebrow">{selected?(selected.oreId==='pin'?'SAVED PIN':'UNCONFIRMED ORE CANDIDATE'):'MAP POSITION'}</span><h2>{selected&&<img src={targetTexture(selected.oreId,selected.y)} alt=""/>}{selected?(ores.find(o=>o.id===selected.oreId)?.name||'Saved pin'):point?.name}</h2><div className="xyz mono"><span>X <b>{selected?.x??point?.x}</b></span>{selected&&<span>Y <b>{selected.y}</b></span>}<span>Z <b>{selected?.z??point?.z}</b></span></div><p>{selected?'Check nearby blocks. Caves, air and world changes can make this candidate empty.':'Save this position for your next visit.'}</p><div className="card-actions"><button onClick={()=>copy(`${selected?.x??point?.x} ${selected?.y??'~'} ${selected?.z??point?.z}`)}><Icon name="copy"/>Copy</button><button onClick={()=>pin(selected||{id:`pin:${point!.x}:${point!.z}`,oreId:'pin',x:point!.x,y:slice,z:point!.z,distance:0})}><Icon name="pin"/>Save pin</button>{selected&&<button onClick={()=>{setFound(f=>[...f,selected.id]);setSelected(null)}}><Icon name="check"/>Hide</button>}</div></section>}
+ <div className="map-footer"><span className="coords mono">X {fmt(view.x)} <i/> Z {fmt(view.z)}</span><span className="scale" style={{width:Math.pow(2,Math.ceil(Math.log2(70/view.zoom)))*view.zoom}}>{Math.pow(2,Math.ceil(Math.log2(70/view.zoom)))} blocks</span></div>
+ {tile?.limited&&<span className="limited-map">Zoom in for more structures</span>}
+ </main>
+ <aside className={'results-sidebar '+(tab==='results'||tab==='pins'?'mobile-open':'')}><div className="panel-heading"><div><span className="eyebrow">EXPEDITION LOG</span><h2>{listTab==='pins'?'Saved places':'Nearby candidates'}</h2></div><button className="mobile-only icon-button" aria-label="Close results" onClick={()=>setTab('map')}><Icon name="close"/></button></div><div className="list-tabs"><button className={listTab==='targets'?'selected':''} onClick={()=>setListTab('targets')}>Candidates <b>{visible.length}</b></button><button className={listTab==='pins'?'selected':''} onClick={()=>setListTab('pins')}>Pins <b>{activePins.length}</b></button></div>
+ {listTab==='targets'?<><div className="result-summary"><span>{hint}</span>{visible.length>0&&<button aria-label="Download candidate CSV" onClick={csv}><Icon name="download"/></button>}</div>{limited&&<p className="warning">6,000-candidate limit reached. Reduce the radius or Y range; this list is incomplete.</p>}{!visible.length?<div className="empty-state"><img src={texture(ore.image)} alt=""/><h3>{busy?'Searching your world':searched?'No candidates to show':'Your next discovery starts here.'}</h3><p>{busy?'Calculations run locally. You can keep exploring the map.':searched?'Change the radius or Y range, or choose a different location.':'Choose an ore, paste your seed, and scan an area. The map is already showing seed '+world.seed+'.'}</p>{found.length>0&&<button onClick={()=>setFound([])}>Restore hidden candidates</button>}</div>:<div className="result-list">{visible.slice(0,200).map(t=><button key={t.id} className={'result-row '+(selected?.id===t.id?'selected':'')} onClick={()=>select(t)}><img src={targetTexture(t.oreId,t.y)} alt=""/><span><b>{ores.find(o=>o.id===t.oreId)!.name}</b><small className="mono">{t.x} <i>/</i> {t.y} <i>/</i> {t.z}</small></span><em>{fmt(t.distance)} m</em></button>)}{visible.length>200&&<p className="micro-note">Nearest 200 listed. All {fmt(visible.length)} candidates are on the map and in CSV.</p>}</div>}<div className="depth-card"><div><span className="eyebrow">MINING DEPTH</span><b className="mono">Y {ore.peak}</b></div><div className="depth-track"><span style={{left:(ore.peak+64)/384*100+'%'}}/></div><p>A useful starting depth for {ore.name.toLowerCase()}. Terrain and biome matter.</p></div>{source&&<p className="micro-note">{source}. Not verified against your world.</p>}</>:<><p className="result-summary">This seed, edition and dimension · stored on this device</p>{activePins.length?<div className="result-list">{activePins.map(t=><div className="saved-row" key={t.id}><button onClick={()=>select(t)}><Icon name="pin"/><span className="mono">{t.x}, {t.y}, {t.z}</span></button><button aria-label={`Remove pin ${t.x} ${t.z}`} onClick={()=>unpin(t)}><Icon name="close"/></button></div>)}</div>:<div className="empty-state"><Icon name="pin"/><h3>Keep a place worth returning to.</h3><p>Tap the map or a candidate, then choose Save pin.</p></div>}</>}
+ <footer className="app-credit">Built for explorers by <b>Vignesh</b><button onClick={()=>info.current?.showModal()}>Accuracy & credits</button></footer></aside>
+ </div>
+ <nav className="mobile-nav" aria-label="Main navigation">{[['search','settings','Search'],['map','map','Map'],['results','search','Results'],['pins','pin','Pins']].map(([id,icon,label])=><button key={id} className={tab===id?'selected':''} onClick={()=>{setTab(id);if(id==='pins')setListTab('pins');if(id==='results')setListTab('targets')}}><Icon name={icon}/>{label}</button>)}</nav>
+ <dialog ref={info} className="about-dialog"><button className="close icon-button" aria-label="Close about" onClick={()=>info.current?.close()}><Icon name="close"/></button><span className="eyebrow">ORE ATLAS BY VIGNESH</span><h2>Your seed. A clearer way to explore.</h2><p>A community Minecraft tool with on-device maps, ore candidates, and saved places. This is not an official Minecraft product and is not approved by Mojang or Microsoft.</p><h3>What works</h3><p>Java: all 11 resource types in the picker, using compiled Cubiomes generation rules. Bedrock 26.45: experimental placement centres for the eight Overworld ores. Bedrock 26.20: experimental diamond targets. Other listed Bedrock versions have maps only. Bedrock Nether ore calculations are not implemented; the picker still provides a mining guide.</p><h3>What a candidate means</h3><p>These are not confirmed blocks. Java uses approximate height and biome checks, but the upstream ore library still skips some block-replacement and air-exposure checks. Bedrock models rule placement, not complete veins or terrain. Large iron/copper noise veins, mined blocks, custom generators and upgraded chunks are not simulated. No in-game accuracy validation has been completed.</p><p>Bedrock 26.45 rule parameters come from the official 1.26.45.1 server. Its biome map uses the upstream 26.40.27 model and is experimental for 26.45. The map shows biomes at the chosen Y slice, not terrain height. Structure starts are predictions, capped at 512 per view.</p><h3>Credits & source</h3><p>App design and integration: M S Vignesh. Maps and Java ore calculations: <a href="https://github.com/xpple/cubiomes" target="_blank" rel="noreferrer">xpple / Cubiomes</a>. Bedrock maps: <a href="https://github.com/FragrantResult186/cubiomes-bedrock" target="_blank" rel="noreferrer">Cubiomes Bedrock</a>. Both retain their MIT notices. The Bedrock rule model and web interface are project code.</p><p>Real ore textures: © Mojang AB, from <a href="https://github.com/Mojang/bedrock-samples" target="_blank" rel="noreferrer">Mojang’s Bedrock samples</a>, subject to the Minecraft EULA. Deepslate variants are bundled; texture choice is visual and does not confirm the actual block type.</p><p><a href={`${import.meta.env.BASE_URL}credits.txt`} target="_blank" rel="noreferrer">Full licences and provenance</a> · <a href="https://github.com/msvignesh08/Minecraftorecalculator" target="_blank" rel="noreferrer">Your project on GitHub</a></p></dialog>
+ {toast&&<div className="toast" role="status">{toast}</div>}
+ </div>
 }
